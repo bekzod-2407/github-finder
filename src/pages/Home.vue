@@ -36,22 +36,6 @@
 
         <!-- user -->
 
-        <Vuetable
-          v-if="users"
-          :api-mode="false"
-          :data="users"
-          :fields="UserFields"
-           pagination-path=""
-        />
-        <template slot="images" slot-scope="props">
-          <div class="img__wrapper">
-            <img
-              :src=" props.rowData.image[0].name"
-              alt=""
-            />
-          </div>
-        </template>
-
         <!-- <div class="users__wrapper" v-if="users">
           <div class="users__item" v-for="user in users" :key="user.id">
             <div class="users__info">
@@ -59,11 +43,31 @@
                 <img :src="user.avatar_url" :alt="user.login" />
               </div>
               <h1>{{ users.bio }}</h1>
-              <p>{ {}}</p> -->
-        <!-- <span>{{ repo.stargazers_count }}⭐</span> -->
-        <!-- </div>
+            </div>
           </div>
         </div> -->
+        <table v-if="users">
+          <thead>
+            <th>Name</th>
+            <th>Avatar</th>
+            <th>Login</th>
+            <th>Repository</th>
+            <th>followers</th>
+            <th>following</th>
+          </thead>
+          <tbody>
+            <tr v-for="user in users" :key="user.id">
+              <td>
+                {{ user.name }}
+              </td>
+              <td><img :src="user.avatar_url" :alt="user.name" /></td>
+              <td>{{ user.login }}</td>
+              <td>{{ user.public_repos }}</td>
+              <td>{{ user.followers }}</td>
+              <td>{{ user.following }}</td>
+            </tr>
+          </tbody>
+        </table>
       </div>
     </section>
   </div>
@@ -72,15 +76,12 @@
 <script>
 import search from "../components/Search.vue";
 import axios from "axios";
-import Vuetable from "vuetable-2";
-import { UserFields } from "../vuetable/vuetable-fields";
 export default {
-  components: { search, Vuetable },
+  components: { search },
   data() {
     return {
-      UserFields,
       search: "",
-      users: [],
+      users: null,
       repos: null,
       error: null,
     };
@@ -111,6 +112,7 @@ export default {
       axios
         .get(`https://api.github.com/users/${this.search}`)
         .then((resp) => {
+          this.users = [];
           console.log("USERDATA", resp.data);
           this.users.push(resp.data);
           this.error = null;
@@ -144,8 +146,7 @@ export default {
   margin: 30px 0;
 }
 
-.repos__info,
-.users__info {
+.repos__info {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -161,7 +162,7 @@ export default {
   color: rgb(160, 46, 46);
 }
 
-.users-img {
+table {
   img {
     width: 100px;
     height: 100px;
