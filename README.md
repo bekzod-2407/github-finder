@@ -1,4 +1,5 @@
-# vue-tocode
+# github-finder
+
 
 ## Project setup
 ```
